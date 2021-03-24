@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Strength Checker</title>
+    <style>
+    #passStrength{
+        font-weight: bold;
+    }
+.red{
+    color: red;
+}
+
+.green{
+    color: green;
+}
+.lightGreen{
+    color: greenyellow;
+}
+
+.orange{
+    color: orange;
+}
+
+
+.yellow{
+    color: rgb(207, 207, 48);
+}
+
+    </style>
+</head>
+<body>
+    <h1>Enter password</h1>
+    <input type="password" id="password">
+    <button id="check" >Check</button>
+    <button id="tryAgain" >try again</button>
+
+    <button id="show">Show Password</button>
+    
+    <p id="passStrength"></p>
+    <div>
+    </div>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script>
+    $("#tryAgain").hide();
+
+    $("#tryAgain").click(function(){
+        // $( "#check" ).show();
+        // $('#password').val('');
+        // $( "#password" ).prop( "disabled", false );
+        // $('div').empty();
+        // $('#passStrength').text('');
+        // $("#tryAgain").hide();
+        location.reload(true);
+    });
+
+
+let strongPassword ="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,}"
+const Level6 = new RegExp('[0-9]', 'g')
+const Level5 = new RegExp('[^a-z0-9]', 'gi');
+const Level4 = new RegExp('[A-Z]', 'g');
+const Level3 = new RegExp('(?=.{8,})' , 'g');
+const Level2 = new RegExp('(?=.{12,})' , 'g');
+const Level1 = new RegExp('(?=[^a-z0-9]{2,})' , 'g');
+
+$('#password').keypress(function(){
+    this.value = this.value.replace(/\s/g,'');
+});
+
+$('#show').click(function(){
+    const inputType = document.getElementById('password');
+
+    if (inputType.type === 'password') {
+        inputType.type = 'text';
+        $('#show').text('hide password');
+    } 
+    else{
+        inputType.type = 'password';
+        $('#show').text('Show Password');
+    }
+
+})
+
+ $('#check').on('click', function(){
+debugger;
+   let counter = 0;
+   let symbolsCapCheck =0;
+    let numberCheck =0;
+    let basicCheck = false ;
+    let password =  $('#password').val();
+console.log('counter',counter);
+console.log('symbolsCapCheck',symbolsCapCheck);
+console.log('numberCheck',numberCheck);
+
+console.log('basicCheck',basicCheck);
+
+
+    if (Level5.test(password)) {
+       
+        $('div').append(' <p>✅ the password has symbols </p>');
+        counter++;
+        symbolsCapCheck++;
+    }
+    else {
+        $('div').append(' <p>❌ the password has symbols </p>');
+    }
+if (Level4.test(password)) {
+
+    $('div').append(' <p>✅ the password has capital letters </p>');
+counter ++;
+symbolsCapCheck++;
+}
+else{
+    $('div').append(' <p>❌ the password has capital letters </p>');
+
+}
+    if (Level3.test(password)) {
+        $('div').append('<p> ✅ the password has more than 8 characters</p>');
+        counter ++;
+    basicCheck = true;
+    }
+else{
+    $('div').append('<p> ❌ the password has more than 8 characters</p>');
+
+}
+    if (Level2.test(password)) {
+        $('div').append('<p> ✅ the password has more than 12 characters</p>');
+        counter ++;
+   
+}
+else{
+    $('div').append('<p> ❌ the password has more than 12 characters</p>');
+
+}
+
+if (Level1.test(password)) {
+    $('div').append('<p> ✅ the password has more than 2 capital letters and symbols</p>');
+        counter ++;
+        symbolsCapCheck++;
+}
+else{
+    $('div').append('<p> ❌ the password has more than 2 capital letters and symbols</p>');
+
+}
+
+if (Level6.test(password)) {
+    $('div').append('<p> ✅ the password has numbers </p>');
+        counter ++;
+        numberCheck++;
+}
+else{
+    $('div').append('<p> ❌ the password has numbers</p>');
+
+}
+
+
+
+if ( basicCheck === false) {
+    $('#passStrength').text('bad password');
+    $('#passStrength').attr('class','red');
+}
+
+else if (counter >=5) {
+    $('#passStrength').text('very strong password');
+    $('#passStrength').attr('class','green');
+}
+
+else if (symbolsCapCheck >=2 && counter >3 && numberCheck === 1 ) {
+    
+    $('#passStrength').text('strong password');
+    $('#passStrength').attr('class','lightGreen');
+    }
+
+else if (symbolsCapCheck >=1 && counter >=2 && numberCheck === 1 ) {
+    
+$('#passStrength').text('good password');
+$('#passStrength').attr('class','yellow');
+}
+
+
+else if(symbolsCapCheck >1 || basicCheck === true ){
+    $('#passStrength').text('weak password');
+    $('#passStrength').attr('class','orange');
+}
+
+console.log('round 2');
+console.log('counter',counter);
+console.log('symbolsCapCheck',symbolsCapCheck);
+console.log('numberCheck',numberCheck);
+
+console.log('basicCheck',basicCheck);
+
+$( "#password" ).prop( "disabled", true );
+$( "#check" ).hide();
+$("#tryAgain").show();
+});
+
+</script>
+</html>
