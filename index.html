@@ -17,18 +17,20 @@
     color: green;
 }
 .lightGreen{
-    color: greenyellow;
+    color: lightgreen;
 }
 
 .orange{
     color: orange;
 }
 
-
 .yellow{
     color: rgb(207, 207, 48);
 }
 
+.greenYellow{
+    color: greenyellow;
+}
     </style>
 </head>
 <body>
@@ -46,60 +48,111 @@
 
 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 <script>
+
     $("#tryAgain").hide();
 
     $("#tryAgain").click(function(){
-        // $( "#check" ).show();
-        // $('#password').val('');
-        // $( "#password" ).prop( "disabled", false );
-        // $('div').empty();
-        // $('#passStrength').text('');
-        // $("#tryAgain").hide();
-        location.reload(true);
+        
+        $( "#password" ).prop( "disabled", false );
+        $( "#check" ).show();
+        $("#tryAgain").hide();
+        $('#password').val('');
+        $('div').empty();
+        $('#passStrength').text('');
+
     });
 
-// const Level6 = new RegExp(/\d/, 'g');
-// const Level6 = new RegExp('\\d', 'g');
-// const Level6 = new RegExp('[0-9]', 'g');
-const Level6 = /\d/g ;
-const Level5 = /[^a-z0-9]/gi;
-const Level4 = /[A-Z]/g;
-const Level3 = /.{8,}/g ;
-const Level2 = /.{12,}/g;
-const Level1 = /[^a-z0-9]{2,}/g ;
+const alphabet = [...'abcdefghijklmnopqrstuvwxyz'];
+const digits = [...'0123456789'];
+ const all = [...'abcdefghijklmnopqrstuvwxyz0123456789'];
+//  let all = 'abcdefghijklmnopqrstuvwxyz0123456789';
+//    all = all.split('');
 
-$('#password').keypress(function(){
-    this.value = this.value.replace(/\s/g,'');
+// const Level6 = new RegExp(/\d/); 
+// const Level6 = new RegExp(/\d/, 'g');
+// const Level6 = new RegExp('\\d', 'gi'); i = ignore case
+// const Level6 = new RegExp('[0-9]', 'g');
+const Level6 = /\d/;  
+const Level5 = /[^a-z0-9]/i; 
+const Level4 = /[A-Z]/;
+const Level3 = /.{8}/; 
+const Level2 = /.{12}/;
+const Level1 = pass =>{ 
+  let isNotRepeatChar = true;
+all.forEach(el => {   
+    //  debugger;
+    let characterCheck =  new RegExp(`${el}{3}`, 'i');
+    if (characterCheck.test(pass)) {
+        isNotRepeatChar = false ;
+    }       
+  
 });
 
-$('#show').click(function(){
-    const inputType = document.getElementById('password');
+return isNotRepeatChar ;
+}
+const Level0 = pass => {
+    let isNotIncrementChar = true;
+    all.forEach((el, index) => {   
+    // debugger;                        
+    let characterCheck =  new RegExp(`${alphabet[index]}${alphabet[index+1]}${alphabet[index+2]}`, 'i');
+    if (characterCheck.test(pass)) {
+        isNotIncrementChar = false ;
+    }       
+     
+});
+if (isNotIncrementChar === false) {
+    return isNotIncrementChar ;
+}
+all.forEach((el, index) => {   
+    // debugger;
+    let characterCheck =  new RegExp(`${digits[index]}${digits[index+1]}${digits[index+2]}`);
+    if (characterCheck.test(pass)) {
+        isNotIncrementChar = false ;
+    }       
+     
+});
+return isNotIncrementChar ;
+}
 
-    if (inputType.type === 'password') {
-        inputType.type = 'text';
+// prevent spaces
+$('#password').on('keypress change',function(){
+    $(this).val($(this).val().replace(/\s/g,''));
+});
+// show the password 
+$('#show').click(function(){
+
+    let password = $('#password');
+    if (password.attr('type') === 'password') {
+        password.attr('type', 'text') ;
         $('#show').text('hide password');
     } 
     else{
-        inputType.type = 'password';
+        password.attr('type', 'password') ;
         $('#show').text('Show Password');
     }
 
-})
+});
 
+
+// check the password and show results
  $('#check').on('click', function(){
-debugger;
-   let counter = 0;
-   let symbolsCapCheck =0;
-    let numberCheck =0;
-    let basicCheck = false ;
+    let counter = 0;
+    let symbolsCapCheck =0;
+    let hasNumber =false;
+    let hasCapital = false;
+    let hasSymbol = false;
+    let basicCheck = false ; // has 8 or more characters
+    let hasNoRepeat = false;
+    let hasNoIncremental =false ;
     let password =  $('#password').val();
 
-    if (Level6.test(password)) {
+// the start of the requirements check
+if (Level6.test(password)) {
     $('div').append('<p> ✅ the password has numbers </p>');
         counter ++;
-        numberCheck++;
+        hasNumber = true;
 }
-else{
+else{ 
     $('div').append('<p> ❌ the password has numbers</p>');
 
 }
@@ -108,7 +161,7 @@ else{
        
         $('div').append(' <p>✅ the password has symbols </p>');
         counter++;
-        symbolsCapCheck++;
+        hasSymbol = true;
     }
     else {
         $('div').append(' <p>❌ the password has symbols </p>');
@@ -117,7 +170,7 @@ if (Level4.test(password)) {
 
     $('div').append(' <p>✅ the password has capital letters </p>');
 counter ++;
-symbolsCapCheck++;
+hasCapital =true;
 }
 else{
     $('div').append(' <p>❌ the password has capital letters </p>');
@@ -142,10 +195,30 @@ else{
 
 }
 
-if (Level1.test(password)) {
+
+if (Level1(password)) {
+    $('div').append('<p> ✅ the password has no more than 2 repeated letters or numbers </p>');
+        counter ++;
+       hasNoRepeat =true;
+}
+else{
+    $('div').append('<p> ❌  the password has no more than 2 repeated letters or numbers </p>');
+
+}
+
+if (Level0(password)) {
+    $('div').append('<p> ✅ the password has more no than 2 incremental letters or numbers </p>');
+        counter ++;
+        hasNoIncremental = true;
+}
+else{
+    $('div').append('<p> ❌the password has no more than  2 incremental letters or numbers  </p>');
+
+}
+
+if (Level4.test(password) && Level5.test(password)) {
     $('div').append('<p> ✅ the password has more than 2 capital letters and symbols</p>');
         counter ++;
-        symbolsCapCheck++;
 }
 else{
     $('div').append('<p> ❌ the password has more than 2 capital letters and symbols</p>');
@@ -153,45 +226,47 @@ else{
 }
 
 
+//............ result message..............//
 
-if ( basicCheck === false) {
+if (!basicCheck) { // 8 or more characters
     $('#passStrength').text('bad password');
     $('#passStrength').attr('class','red');
 }
 
-else if (counter >=5) {
+else if (counter === 8) { // all the requirements
     $('#passStrength').text('very strong password');
     $('#passStrength').attr('class','green');
 }
 
-else if (symbolsCapCheck >=2 &&  numberCheck === 1 ) {
+else if (hasCapital && hasSymbol &&  hasNumber  && hasNoRepeat && hasNoIncremental ) {
     
     $('#passStrength').text('strong password');
     $('#passStrength').attr('class','lightGreen');
     }
 
-else if (symbolsCapCheck >=1  && numberCheck === 1 ) {
+
+else if ((hasCapital || hasSymbol)  && hasNumber  && hasNoRepeat && hasNoIncremental ) {
+    
+$('#passStrength').text('very good password');
+$('#passStrength').attr('class','greenYellow');
+}
+else if (((hasSymbol || hasCapital)  && hasNumber) || (hasNumber && hasNoRepeat  && hasNoIncremental )) {
     
 $('#passStrength').text('good password');
 $('#passStrength').attr('class','yellow');
 }
-
 
 else if(basicCheck === true ){
     $('#passStrength').text('weak password');
     $('#passStrength').attr('class','orange');
 }
 
-console.log('round 2');
-console.log('counter',counter);
-console.log('symbolsCapCheck',symbolsCapCheck);
-console.log('numberCheck',numberCheck);
-
-console.log('basicCheck',basicCheck);
 
 $( "#password" ).prop( "disabled", true );
 $( "#check" ).hide();
 $("#tryAgain").show();
+
+
 });
 
 </script>
